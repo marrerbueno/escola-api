@@ -61,18 +61,6 @@ function WhatsAppConnect() {
         </div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className={`stat-icon ${status?.configurado ? 'green' : 'red'}`}>
-            {status?.configurado ? <Wifi size={24} /> : <WifiOff size={24} />}
-          </div>
-          <div className="stat-info">
-            <h3>{status?.configurado ? 'Conectado' : 'Desconectado'}</h3>
-            <p>Provedor: {status?.provider || 'Nenhum'}</p>
-          </div>
-        </div>
-      </div>
-
       {error && (
         <div className="card" style={{ borderColor: 'var(--danger)' }}>
           <p style={{ color: 'var(--danger)' }}>{error}</p>
@@ -103,28 +91,30 @@ function WhatsAppConnect() {
             </div>
           ) : qrCode ? (
             <div>
-              <p style={{ marginBottom: '1rem', color: 'var(--gray-600)' }}>
+              <p style={{ marginBottom: '1rem', color: 'var(--gray-600)', fontWeight: 'bold', fontSize: '1.1rem' }}>
                 Escaneie o QR Code com seu WhatsApp:
               </p>
               <div style={{
                 display: 'inline-block',
-                padding: '1rem',
+                padding: '1.5rem',
                 background: 'white',
-                borderRadius: '12px',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+                borderRadius: '16px',
+                boxShadow: '0 8px 30px rgba(0,0,0,0.15)'
               }}>
                 <img
                   src={qrCode}
                   alt="QR Code WhatsApp"
-                  style={{ maxWidth: '300px', display: 'block' }}
+                  style={{ maxWidth: '280px', display: 'block' }}
                 />
               </div>
-              <p style={{ marginTop: '1rem', fontSize: '0.875rem', color: 'var(--gray-500)' }}>
-                1. Abra o WhatsApp no celular<br />
-                2. Vá em Configurações → Dispositivos conectados<br />
-                3. Toque em "Conectar dispositivo"<br />
-                4. Escaneie o QR Code acima
-              </p>
+              <div style={{ marginTop: '1.5rem', textAlign: 'left', display: 'inline-block' }}>
+                <p style={{ fontSize: '0.9rem', color: 'var(--gray-600)', lineHeight: '1.8' }}>
+                  <strong>1.</strong> Abra o WhatsApp no celular<br />
+                  <strong>2.</strong> Vá em <strong>Configurações</strong> → <strong>Dispositivos conectados</strong><br />
+                  <strong>3.</strong> Toque em <strong>"Conectar dispositivo"</strong><br />
+                  <strong>4.</strong> Escaneie o QR Code acima
+                </p>
+              </div>
             </div>
           ) : (
             <div>
@@ -135,6 +125,18 @@ function WhatsAppConnect() {
               </p>
             </div>
           )}
+        </div>
+      </div>
+
+      <div className="stats-grid">
+        <div className="stat-card">
+          <div className={`stat-icon ${status?.configurado ? 'green' : 'red'}`}>
+            {status?.configurado ? <Wifi size={24} /> : <WifiOff size={24} />}
+          </div>
+          <div className="stat-info">
+            <h3>{status?.configurado ? 'Conectado' : 'Desconectado'}</h3>
+            <p>Provedor: {status?.provider || 'Nenhum'}</p>
+          </div>
         </div>
       </div>
     </div>
