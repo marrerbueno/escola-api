@@ -8,6 +8,7 @@ import {
   FileText, 
   CheckSquare, 
   Bell,
+  MessageCircle,
   LogOut 
 } from 'lucide-react';
 
@@ -23,6 +24,7 @@ function Layout() {
     { path: '/notas', label: 'Notas', icon: FileText },
     { path: '/presencas', label: 'Presenças', icon: CheckSquare },
     { path: '/notificacoes', label: 'Notificações', icon: Bell },
+    { path: '/whatsapp', label: 'WhatsApp', icon: MessageCircle },
   ];
 
   const isActive = (path) => {
