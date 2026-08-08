@@ -1,0 +1,12 @@
+{
+  "appId": "com.escoladigital.app",
+  "appName": "Escola Digital",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "http",
+    "allowNavigation": ["*"]
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}

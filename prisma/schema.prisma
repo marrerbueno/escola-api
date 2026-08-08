@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// MODELOS PRINCIPAIS
+// ============================================
+
+model Usuario {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  senha         String
+  nome          String
+  role          String    @default("ALUNO")
+  ativo         Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relações
+  aluno         Aluno?
+  professor     Professor?
+
+  @@map("usuarios")
+}
+
+model Aluno {
+  id            String    @id @default(uuid())
+  usuarioId     String    @unique
+  matricula     String    @unique
+  nomeCompleto  String
+  dataNascimento DateTime
+  cpf           String?
+  telefone      String?
+  endereco      String?
+  responsavelNome   String?
+  responsavelTel    String?
+  responsavelEmail  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relações
+  usuario       Usuario   @relation(fields: [usuarioId], references: [id])
+  turmaId       String?
+  turma         Turma?    @relation(fields: [turmaId], references: [id])
+  notas         Nota[]
+  presencas     Presenca[]
+
+  @@map("alunos")
+}
+
+model Professor {
+  id            String    @id @default(uuid())
+  usuarioId     String    @unique
+  siape         String    @unique
+  nomeCompleto  String
+  especialidade String?
+  formacao      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relações
+  usuario       Usuario   @relation(fields: [usuarioId], references: [id])
+  turmas        Turma[]   @relation("ProfessorTurma")
+  disciplinas   Disciplina[]
+  notas         Nota[]
+  presencas     Presenca[]
+
+  @@map("professores")
+}
+
+model Turma {
+  id            String    @id @default(uuid())
+  nome          String
+  ano           Int
+  periodo       String    @default("MANHA")
+  capacidade    Int       @default(40)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relações
+  alunos        Aluno[]
+  disciplinas   Disciplina[]
+  professorId   String?
+  professor     Professor? @relation("ProfessorTurma", fields: [professorId], references: [id])
+
+  @@unique([nome, ano, periodo])
+  @@map("turmas")
+}
+
+model Disciplina {
+  id            String    @id @default(uuid())
+  nome          String
+  cargaHoraria  Int       @default(60)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relações
+  turmaId       String
+  turma         Turma     @relation(fields: [turmaId], references: [id])
+  professorId   String
+  professor     Professor @relation(fields: [professorId], references: [id])
+  notas         Nota[]
+  presencas     Presenca[]
+
+  @@unique([nome, turmaId])
+  @@map("disciplinas")
+}
+
+// ============================================
+// NOTAS E BOLETIM
+// ============================================
+
+model Nota {
+  id            String    @id @default(uuid())
+  valor         Float
+  bimestre      String
+  tipo          String    @default("AVALIACAO")
+  descricao     String?
+  enviada       Boolean   @default(false)
+  dataLancamento DateTime @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relações
+  alunoId       String
+  aluno         Aluno     @relation(fields: [alunoId], references: [id])
+  disciplinaId  String
+  disciplina    Disciplina @relation(fields: [disciplinaId], references: [id])
+  professorId   String
+  professor     Professor @relation(fields: [professorId], references: [id])
+
+  @@unique([alunoId, disciplinaId, bimestre, tipo])
+  @@map("notas")
+}
+
+// ============================================
+// PRESENÇA
+// ============================================
+
+model Presenca {
+  id            String    @id @default(uuid())
+  data          DateTime  @default(now())
+  status        String    @default("PRESENTE")
+  observacao    String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relações
+  alunoId       String
+  aluno         Aluno     @relation(fields: [alunoId], references: [id])
+  disciplinaId  String
+  disciplina    Disciplina @relation(fields: [disciplinaId], references: [id])
+  professorId   String
+  professor     Professor @relation(fields: [professorId], references: [id])
+
+  @@unique([alunoId, disciplinaId, data])
+  @@map("presencas")
+}
+
+// ============================================
+// CONFIGURAÇÕES DA ESCOLA
+// ============================================
+
+model ConfiguracaoEscola {
+  id            String    @id @default(uuid())
+  chave         String    @unique
+  valor         String
+  descricao     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("configuracoes_escola")
+}
+
+// ============================================
+// LOGS DE AUDITORIA
+// ============================================
+
+model AuditLog {
+  id            String    @id @default(uuid())
+  usuarioId     String?
+  acao          String
+  tabela        String
+  registroId    String?
+  dadosAntes    String?
+  dadosDepois   String?
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime  @default(now())
+
+  @@index([usuarioId])
+  @@index([tabela])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
