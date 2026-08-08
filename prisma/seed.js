@@ -256,7 +256,11 @@ async function main() {
   ];
 
   for (const nota of notas) {
-    await prisma.nota.create({ data: nota });
+    await prisma.nota.upsert({
+      where: { alunoId_disciplinaId_bimestre_tipo: { alunoId: nota.alunoId, disciplinaId: nota.disciplinaId, bimestre: nota.bimestre, tipo: nota.tipo } },
+      update: { valor: nota.valor },
+      create: nota,
+    });
   }
 
   console.log('✅ Notas criadas');
@@ -266,6 +270,7 @@ async function main() {
   // ============================================
 
   const hoje = new Date();
+  hoje.setHours(12, 0, 0, 0);
   const presencas = [
     { alunoId: al1.id, disciplinaId: disc1.id, professorId: prof1.id, data: hoje, status: 'PRESENTE' },
     { alunoId: al1.id, disciplinaId: disc2.id, professorId: prof2.id, data: hoje, status: 'PRESENTE' },
@@ -275,7 +280,11 @@ async function main() {
   ];
 
   for (const presenca of presencas) {
-    await prisma.presenca.create({ data: presenca });
+    await prisma.presenca.upsert({
+      where: { alunoId_disciplinaId_data: { alunoId: presenca.alunoId, disciplinaId: presenca.disciplinaId, data: presenca.data } },
+      update: { status: presenca.status },
+      create: presenca,
+    });
   }
 
   console.log('✅ Presenças criadas');
