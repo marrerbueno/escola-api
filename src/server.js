@@ -27,7 +27,7 @@ app.use(helmet());
 
 // CORS
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://192.168.100.111:3000', 'http://192.168.100.111:5173', 'https://escola-frontend-u9uo.onrender.com'],
+  origin: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
