@@ -35,7 +35,7 @@ app.use(cors({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // máximo 100 requisições por IP
+  max: 500, // máximo 500 requisições por IP
   message: { error: 'Muitas requisições. Tente novamente mais tarde.' },
 });
 app.use('/api/', limiter);
@@ -43,7 +43,7 @@ app.use('/api/', limiter);
 // Rate limiting mais restritivo para login
 const loginLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minuto
-  max: 10, // máximo 10 tentativas por minuto
+  max: 30, // máximo 30 tentativas por minuto
   message: { error: 'Muitas tentativas de login. Tente novamente mais tarde.' },
 });
 app.use('/api/auth/login', loginLimiter);
