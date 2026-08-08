@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Wifi, WifiOff, RefreshCw, QrCode } from 'lucide-react';
 import api from '../services/api';
 
@@ -7,19 +7,7 @@ function WhatsAppConnect() {
   const [qrCode, setQrCode] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const checkStatus = async () => {
-    try {
-      const res = await api.get('/notificacoes/status');
-      setStatus(res.data);
-      setError(null);
-    } catch (err) {
-      setError('Erro ao verificar status do WhatsApp');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchedRef = useRef(false);
 
   const fetchQRCode = async () => {
     try {
@@ -32,6 +20,7 @@ function WhatsAppConnect() {
         setQrCode(null);
       } else if (data.qr) {
         setQrCode(data.qr);
+        setStatus({ configurado: false, provider: 'whatsapp-web' });
       }
     } catch (err) {
       console.error('Erro ao buscar QR Code:', err);
@@ -39,14 +28,30 @@ function WhatsAppConnect() {
   };
 
   useEffect(() => {
-    checkStatus();
-    const interval = setInterval(() => {
-      if (!status?.configurado) {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+    
+    const init = async () => {
+      try {
+        const res = await api.get('/notificacoes/status');
+        setStatus(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
         fetchQRCode();
       }
-    }, 5000);
+    };
+    
+    init();
+  }, []);
+
+  useEffect(() => {
+    if (loading || status?.configurado) return;
+    
+    const interval = setInterval(fetchQRCode, 10000);
     return () => clearInterval(interval);
-  }, [status?.configurado]);
+  }, [loading, status?.configurado]);
 
   if (loading) {
     return <div className="loading">Carregando...</div>;
