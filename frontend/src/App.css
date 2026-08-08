@@ -57,6 +57,8 @@ body {
   position: fixed;
   height: 100vh;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-header {
@@ -78,6 +80,8 @@ body {
 
 .sidebar-nav {
   padding: 0 0.75rem;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .sidebar-nav a {
@@ -107,9 +111,6 @@ body {
   padding: 1rem 1.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: auto;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
 }
 
 .sidebar-footer .user-info {
