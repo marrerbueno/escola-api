@@ -16,8 +16,18 @@ let sock = null;
 let isReady = false;
 let currentQR = null;
 let reconnectTimeout = null;
+let reconnectAttempts = 0;
+const MAX_RECONNECT_ATTEMPTS = 10;
 
 async function connectWhatsApp() {
+  // Limpar sessão anterior se existir
+  if (sock) {
+    try {
+      sock.end(undefined);
+    } catch (e) {}
+    sock = null;
+  }
+
   const { state, saveCreds } = await useMultiFileAuthState('./whatsapp-session');
 
   sock = makeWASocket({
@@ -28,6 +38,8 @@ async function connectWhatsApp() {
     printQRInTerminal: false,
     logger: pino({ level: 'silent' }),
     browser: ['Escola Digital', 'Chrome', '120.0'],
+    connectTimeout: 60000,
+    qrTimeout: 120000,
   });
 
   // QR Code
@@ -35,6 +47,7 @@ async function connectWhatsApp() {
     const { connection, lastDisconnect, qr } = update;
 
     if (qr) {
+      reconnectAttempts = 0;
       console.log('\n📱 QR Code recebido! Gerando imagem...\n');
       try {
         currentQR = await QRCode.toDataURL(qr, {
@@ -43,7 +56,6 @@ async function connectWhatsApp() {
           color: { dark: '#000000', light: '#ffffff' }
         });
         console.log('✅ QR Code pronto para escanear!');
-        console.log('🔗 Acesse: http://localhost:3001/qr\n');
       } catch (error) {
         console.error('Erro ao gerar QR Code:', error);
       }
@@ -57,13 +69,27 @@ async function connectWhatsApp() {
       isReady = false;
       currentQR = null;
 
-      if (shouldReconnect) {
-        console.log('🔄 Reconectando em 5 segundos...');
-        reconnectTimeout = setTimeout(connectWhatsApp, 5000);
+      if (shouldReconnect && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+        reconnectAttempts++;
+        const delay = Math.min(5000 * reconnectAttempts, 60000);
+        console.log(`🔄 Reconectando em ${delay/1000}s (tentativa ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`);
+        reconnectTimeout = setTimeout(connectWhatsApp, delay);
       } else {
-        console.log('❌ Deslogado. Escaneie o QR Code novamente.');
+        console.log('❌ Sessão expirada. Gerando novo QR Code...');
         currentQR = null;
-        reconnectTimeout = setTimeout(connectWhatsApp, 10000);
+        // Limpar sessão antiga e reconectar
+        reconnectTimeout = setTimeout(async () => {
+          try {
+            const fs = require('fs');
+            const sessionPath = './whatsapp-session';
+            if (fs.existsSync(sessionPath)) {
+              fs.rmSync(sessionPath, { recursive: true, force: true });
+              console.log('🗑️ Sessão antiga removida');
+            }
+          } catch (e) {}
+          reconnectAttempts = 0;
+          connectWhatsApp();
+        }, 5000);
       }
     }
 
@@ -71,6 +97,7 @@ async function connectWhatsApp() {
       console.log('✅ WhatsApp conectado!');
       isReady = true;
       currentQR = null;
+      reconnectAttempts = 0;
     }
   });
 
