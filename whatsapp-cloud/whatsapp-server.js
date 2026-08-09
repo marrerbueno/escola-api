@@ -480,7 +480,7 @@ app.get('/test', (req, res) => {
 // INICIAR SERVIDOR
 // ============================================
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`\n🚀 WhatsApp Service rodando em http://localhost:${PORT}`);
