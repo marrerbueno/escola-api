@@ -12,7 +12,14 @@ export function AuthProvider({ children }) {
     const savedUser = localStorage.getItem('usuario');
     
     if (token && savedUser) {
-      setUsuario(JSON.parse(savedUser));
+      const user = JSON.parse(savedUser);
+      // Bloquear acesso de alunos
+      if (user.role === 'ALUNO') {
+        localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
+      } else {
+        setUsuario(user);
+      }
     }
     setLoading(false);
   }, []);
@@ -20,6 +27,11 @@ export function AuthProvider({ children }) {
   const login = async (email, senha) => {
     const response = await api.post('/auth/login', { email, senha });
     const { usuario: user, token } = response.data;
+    
+    // Bloquear acesso de alunos
+    if (user.role === 'ALUNO') {
+      throw new Error('Alunos não têm acesso ao sistema. Apenas administradores e professores.');
+    }
     
     localStorage.setItem('token', token);
     localStorage.setItem('usuario', JSON.stringify(user));
