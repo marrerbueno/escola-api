@@ -98,6 +98,11 @@ setInterval(() => {
 // ROTAS DA API
 // ============================================
 
+// Healthcheck - responde imediatamente
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Status do WhatsApp
 app.get('/status', (req, res) => {
   res.json({
