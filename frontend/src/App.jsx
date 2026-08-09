@@ -10,6 +10,7 @@ import Notas from './pages/Notas';
 import Presencas from './pages/Presencas';
 import Notificacoes from './pages/Notificacoes';
 import WhatsAppConnect from './pages/WhatsAppConnect';
+import Metricas from './pages/Metricas';
 import Layout from './components/Layout';
 import './App.css';
 
@@ -66,6 +67,7 @@ function App() {
             <Route path="presencas" element={<Presencas />} />
             <Route path="notificacoes" element={<Notificacoes />} />
             <Route path="whatsapp" element={<WhatsAppConnect />} />
+            <Route path="metricas" element={<Metricas />} />
           </Route>
         </Routes>
       </Router>

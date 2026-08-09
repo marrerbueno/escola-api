@@ -9,7 +9,8 @@ import {
   CheckSquare, 
   Bell,
   MessageCircle,
-  LogOut 
+  LogOut,
+  BarChart3
 } from 'lucide-react';
 
 function Layout() {
@@ -23,6 +24,7 @@ function Layout() {
     { path: '/turmas', label: 'Turmas', icon: School },
     { path: '/notas', label: 'Notas', icon: FileText },
     { path: '/presencas', label: 'Presenças', icon: CheckSquare },
+    { path: '/metricas', label: 'Métricas', icon: BarChart3 },
     { path: '/notificacoes', label: 'Notificações', icon: Bell },
     { path: '/whatsapp', label: 'WhatsApp', icon: MessageCircle },
   ];
