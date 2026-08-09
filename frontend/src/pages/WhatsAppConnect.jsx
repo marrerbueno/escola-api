@@ -7,6 +7,7 @@ function WhatsAppConnect() {
   const [qrCode, setQrCode] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [lastUpdate, setLastUpdate] = useState(null);
   const fetchedRef = useRef(false);
 
   const fetchQRCode = async () => {
@@ -20,6 +21,10 @@ function WhatsAppConnect() {
         setQrCode(null);
       } else if (data.qr) {
         setQrCode(data.qr);
+        setLastUpdate(new Date());
+        setStatus({ configurado: false, provider: 'whatsapp-web' });
+      } else {
+        setQrCode(null);
         setStatus({ configurado: false, provider: 'whatsapp-web' });
       }
     } catch (err) {
@@ -46,10 +51,11 @@ function WhatsAppConnect() {
     init();
   }, []);
 
+  // Atualizar QR Code a cada 5 segundos
   useEffect(() => {
     if (loading || status?.configurado) return;
     
-    const interval = setInterval(fetchQRCode, 10000);
+    const interval = setInterval(fetchQRCode, 5000);
     return () => clearInterval(interval);
   }, [loading, status?.configurado]);
 
@@ -112,6 +118,11 @@ function WhatsAppConnect() {
                   style={{ maxWidth: '280px', display: 'block' }}
                 />
               </div>
+              {lastUpdate && (
+                <p style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--gray-400)' }}>
+                  Atualizado: {lastUpdate.toLocaleTimeString('pt-BR')}
+                </p>
+              )}
               <div style={{ marginTop: '1.5rem', textAlign: 'left', display: 'inline-block' }}>
                 <p style={{ fontSize: '0.9rem', color: 'var(--gray-600)', lineHeight: '1.8' }}>
                   <strong>1.</strong> Abra o WhatsApp no celular<br />
