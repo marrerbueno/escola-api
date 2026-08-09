@@ -1,17 +1,16 @@
 {
   "name": "whatsapp-server",
   "version": "1.0.0",
-  "description": "WhatsApp Server para Escola API",
+  "description": "WhatsApp Server para Escola API (Baileys)",
   "main": "whatsapp-server.js",
   "scripts": {
     "start": "node whatsapp-server.js"
   },
   "dependencies": {
-    "axios": "^1.19.0",
-    "cors": "^2.8.5",
+    "@whiskeysockets/baileys": "^6.7.16",
     "express": "^4.18.2",
+    "cors": "^2.8.5",
     "qrcode": "^1.5.4",
-    "qrcode-terminal": "^0.12.0",
-    "whatsapp-web.js": "^1.34.7"
+    "pino": "^9.6.0"
   }
 }
