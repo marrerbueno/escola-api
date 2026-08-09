@@ -27,6 +27,11 @@ COPY whatsapp-server.js .
 
 # Porta do servidor
 EXPOSE 3001
+ENV PORT=3001
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3001/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1) })"
 
 # Iniciar
 CMD ["node", "whatsapp-server.js"]
