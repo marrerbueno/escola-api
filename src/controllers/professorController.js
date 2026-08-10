@@ -71,10 +71,29 @@ const obter = async (req, res, next) => {
 // Criar professor
 const criar = async (req, res, next) => {
   try {
-    const dados = professorSchema.parse(req.body);
+    const dados = req.body;
+
+    // Se não tiver usuarioId, criar um usuário automaticamente
+    if (!dados.usuarioId && dados.email) {
+      const bcrypt = require('bcryptjs');
+      const senhaHash = await bcrypt.hash(dados.senha || '123456', 10);
+
+      const usuario = await prisma.usuario.create({
+        data: {
+          email: dados.email,
+          senha: senhaHash,
+          nome: dados.nomeCompleto,
+          role: 'PROFESSOR',
+        },
+      });
+
+      dados.usuarioId = usuario.id;
+    }
+
+    const dadosValidados = professorSchema.parse(dados);
 
     const professor = await prisma.professor.create({
-      data: dados,
+      data: dadosValidados,
       include: {
         usuario: { select: { email: true } },
       },
